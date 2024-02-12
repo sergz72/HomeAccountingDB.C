@@ -32,6 +32,8 @@ public:
         delete accounts;
         delete subcategories;
     }
+
+    void calculateTotals();
 };
 
 

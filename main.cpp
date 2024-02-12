@@ -22,10 +22,14 @@ int main(int argc, char **argv) {
 
     try {
         auto begin = std::chrono::steady_clock::now();
-        auto db = new DB(argv[1], 2012, 6, 300, 2000, 200, 1000);
+        auto db = new DB(argv[1], 2012, 6, 300, 2000, 300, 1000);
         db->load_json();
         auto end = std::chrono::steady_clock::now();
-        std::cout << "Elapsed " << std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count() << " us" << std::endl;
+        std::cout << "Database loaded in " << std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count() << " us" << std::endl;
+        begin = std::chrono::steady_clock::now();
+        db->calculateTotals();
+        end = std::chrono::steady_clock::now();
+        std::cout << "Totals calculation finished in " << std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count() << " us" << std::endl;
     } catch (const std::runtime_error &error) {
         std::cout << error.what() << std::endl;
     }

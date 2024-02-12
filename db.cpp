@@ -10,3 +10,7 @@ long DB::getDataIndex(long date) {
 FinanceOperations *DB::createObject() {
     return new FinanceOperations(operations_capacity);
 }
+
+void DB::calculateTotals() {
+
+}

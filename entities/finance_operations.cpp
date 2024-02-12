@@ -144,3 +144,7 @@ long FinanceOperations::getId(FinanceOperation *value) {
 bool FinanceOperations::isValid(FinanceOperation *value) {
     return true;
 }
+
+void FinanceOperations::calculateTotals(FinanceOperations *prev) {
+
+}

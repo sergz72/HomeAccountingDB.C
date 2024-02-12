@@ -1,6 +1,7 @@
 #ifndef H_FINANCE_OPERATIONS_H
 #define H_FINANCE_OPERATIONS_H
 
+#include <map>
 #include "common.h"
 #include "../json/json_parser.h"
 #include "../json/json_object_array_parser.h"
@@ -67,7 +68,13 @@ public:
 
 class FinanceOperations: public JsonObjectArrayParser<FinanceOperation> {
     FinanceOperationParser *parser;
+protected:
+    FinanceOperation *create(JsonParser *p) override;
+    long getId(FinanceOperation *value) override;
+    bool isValid(FinanceOperation *value) override;
 public:
+    std::map<long, long> totals;
+
     inline explicit FinanceOperations(long capacity): JsonObjectArrayParser<FinanceOperation>(capacity) {
         parser = nullptr;
     }
@@ -78,10 +85,7 @@ public:
         delete parser;
     }
 
-protected:
-    FinanceOperation *create(JsonParser *p) override;
-    long getId(FinanceOperation *value) override;
-    bool isValid(FinanceOperation *value) override;
+    void calculateTotals(FinanceOperations *prev);
 };
 
 #endif
