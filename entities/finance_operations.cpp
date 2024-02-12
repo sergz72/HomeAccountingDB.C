@@ -48,6 +48,7 @@ void FinOpPropertyParser::parseValue(int field_id) {
             property.dateValue = parse_date(parser);
             break;
         case PROPERTY_CODE:
+            parser->expectedString();
             if (parser->current.string_value.length() != 4)
                 throw std::runtime_error("incorrect property code");
             strcpy(property.code.char_value, parser->current.string_value.c_str());
@@ -124,6 +125,8 @@ void FinanceOperationParser::parseValue(int field_id) {
             }
             break;
         case FINOP_ID:
+            parser->expectedInteger();
+            break;
         default:
             break;
     }

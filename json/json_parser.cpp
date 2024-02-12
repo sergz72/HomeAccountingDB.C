@@ -65,7 +65,7 @@ void JsonParser::nextToken() {
                             current.setInteger(0);
                             sign = -1;
                         }
-                        if (c >= '0' && c <= '9') {
+                        else if (c >= '0' && c <= '9') {
                             current.setInteger(c - '0');
                         } else if (c > 0x20) {
                             current.typ = name;
