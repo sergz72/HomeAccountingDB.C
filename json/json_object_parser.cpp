@@ -7,7 +7,7 @@ void JsonObjectParser::parse(bool call_expected) {
         parser->is('{');
     while (parser->current.typ != eof) {
         parser->expectedString();
-        auto field_id = parseName(&parser->current.string_value);
+        auto field_id = parseName(parser->current.string_value);
         if (field_id == 0) {
             throw std::runtime_error("unknown field name " + parser->current.string_value);
         }

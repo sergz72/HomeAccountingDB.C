@@ -6,16 +6,16 @@
 #define SUBCATEGORY_CODE 4
 #define SUBCATEGORY_OPERATION_CODE 5
 
-int SubcategoryParser::parseName(std::string *n) {
-    if (*n == "id")
+int SubcategoryParser::parseName(std::string &n) {
+    if (n == "id")
         return SUBCATEGORY_ID;
-    else if (*n == "name")
+    else if (n == "name")
         return SUBCATEGORY_NAME;
-    else if (*n == "categoryId")
+    else if (n == "categoryId")
         return SUBCATEGORY_CATEGORY;
-    else if (*n == "code")
+    else if (n == "code")
         return SUBCATEGORY_CODE;
-    else if (*n == "operationCodeId")
+    else if (n == "operationCodeId")
         return SUBCATEGORY_OPERATION_CODE;
 
     return 0;
@@ -35,21 +35,40 @@ void SubcategoryParser::parseValue(int field_id) {
             break;
         case SUBCATEGORY_OPERATION_CODE:
             parser->expectedString();
-            if (parser->current.string_value.length() != 4)
+            if (parser->current.string_value == "INCM")
+                subcategory.operationCode = incm;
+            else if (parser->current.string_value == "EXPN")
+                subcategory.operationCode = expn;
+            else if (parser->current.string_value == "SPCL")
+                subcategory.operationCode = spcl;
+            else
                 throw std::runtime_error("incorrect subcategory operation code");
-            subcategory.operationCode.int_value = 0;
-            strcpy(subcategory.operationCode.char_value, parser->current.string_value.c_str());
             break;
         case SUBCATEGORY_CODE:
-            subcategory.code.int_value = 0;
             parser->nextToken();
             if (parser->current.isNull()) {
+                subcategory.code = none;
                 break;
             }
             parser->isString();
-            if (parser->current.string_value.length() != 4)
+            if (parser->current.string_value == "INCC")
+                subcategory.code = incc;
+            else if (parser->current.string_value == "EXPC")
+                subcategory.code = expc;
+            else if (parser->current.string_value == "EXCH")
+                subcategory.code = exch;
+            else if (parser->current.string_value == "TRFR")
+                subcategory.code = trfr;
+            else if (parser->current.string_value == "COMB")
+                subcategory.code = comb;
+            else if (parser->current.string_value == "COMC")
+                subcategory.code = comc;
+            else if (parser->current.string_value == "FUEL")
+                subcategory.code = fuel;
+            else if (parser->current.string_value == "PRCN")
+                subcategory.code = prcn;
+            else
                 throw std::runtime_error("incorrect subcategory code");
-            strcpy(subcategory.code.char_value, parser->current.string_value.c_str());
             break;
         default:
             break;

@@ -18,7 +18,7 @@ struct Account {
 
 class AccountParser: public JsonObjectParser {
 protected:
-    int parseName(std::string *n) override;
+    int parseName(std::string &n) override;
     void parseValue(int field_id) override;
 public:
     Account account;
@@ -43,6 +43,7 @@ public:
         buildCashAccounts();
     }
 
+    long getCashAccount(long id);
 protected:
     Account *create(JsonParser *p) override;
     long getId(Account *value) override;

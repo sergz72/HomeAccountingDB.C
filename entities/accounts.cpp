@@ -6,16 +6,16 @@
 #define ACCOUNT_ACTIVE_TO 4
 #define ACCOUNT_IS_CASH 5
 
-int AccountParser::parseName(std::string *n) {
-    if (*n == "id")
+int AccountParser::parseName(std::string &n) {
+    if (n == "id")
         return ACCOUNT_ID;
-    else if (*n == "name")
+    else if (n == "name")
         return ACCOUNT_NAME;
-    else if (*n == "valutaCode")
+    else if (n == "valutaCode")
         return ACCOUNT_CURRENCY_NAME;
-    else if (*n == "activeTo")
+    else if (n == "activeTo")
         return ACCOUNT_ACTIVE_TO;
-    else if (*n == "isCash")
+    else if (n == "isCash")
         return ACCOUNT_IS_CASH;
 
     return 0;
@@ -90,4 +90,12 @@ void Accounts::buildCashAccounts() {
         }
         el++;
     }
+}
+
+long Accounts::getCashAccount(long id) {
+    auto account = get(id);
+    auto acc = account->cashAccount;
+    if (acc < 0)
+        throw std::runtime_error("invalid cash account");
+    return acc;
 }

@@ -3,21 +3,38 @@
 
 #include "../json/json_object_array_parser.h"
 #include "../json/json_object_parser.h"
-#include "common.h"
 
 #define SUBCATEGORY_NAME_SIZE 80
+
+enum SubcategoryOperationCode {
+    incm,
+    expn,
+    spcl
+};
+
+enum SubcategoryCode {
+    comb,
+    comc,
+    fuel,
+    prcn,
+    incc,
+    expc,
+    exch,
+    trfr,
+    none
+};
 
 struct Subcategory {
     long id;
     long category;
     char name[SUBCATEGORY_NAME_SIZE];
-    CharInt code;
-    CharInt operationCode;
+    SubcategoryCode code;
+    SubcategoryOperationCode operationCode;
 };
 
 class SubcategoryParser: public JsonObjectParser {
 protected:
-    int parseName(std::string *n) override;
+    int parseName(std::string &n) override;
     void parseValue(int field_id) override;
 public:
     Subcategory subcategory;

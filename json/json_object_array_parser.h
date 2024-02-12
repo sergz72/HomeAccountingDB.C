@@ -49,13 +49,17 @@ public:
         free(array);
     }
 
-    T *get(int id) {
+    T *get(long id) {
         if (id < 0 || id >= capacity)
             throw std::runtime_error("get: index is out of bounds");
         T *element = &array[id];
         if (!isValid(element))
             throw std::runtime_error("invalid element id");
         return element;
+    }
+
+    inline long getCount() {
+        return count;
     }
 
     virtual bool isValid(T *value) = 0;

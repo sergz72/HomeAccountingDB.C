@@ -3,7 +3,7 @@
 #include "db.h"
 
 void usage() {
-    std::cout << "Usage: home_accounting_db file_name" << std::endl;
+    std::cout << "Usage: home_accounting_db data_folder_path date" << std::endl;
 }
 
 /*void printAll(JsonParser *parser) {
@@ -15,21 +15,23 @@ void usage() {
 }*/
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
+    if (argc != 3) {
         usage();
         return 1;
     }
 
     try {
+        auto date = atol(argv[2]);
         auto begin = std::chrono::steady_clock::now();
         auto db = new DB(argv[1], 2012, 6, 300, 2000, 300, 1000);
         db->load_json();
         auto end = std::chrono::steady_clock::now();
         std::cout << "Database loaded in " << std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count() << " us" << std::endl;
         begin = std::chrono::steady_clock::now();
-        db->calculateTotals();
+        db->calculateTotals(0);
         end = std::chrono::steady_clock::now();
         std::cout << "Totals calculation finished in " << std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count() << " us" << std::endl;
+        db->printChanges(date);
     } catch (const std::runtime_error &error) {
         std::cout << error.what() << std::endl;
     }

@@ -33,7 +33,9 @@ public:
         delete subcategories;
     }
 
-    void calculateTotals();
+    void calculateTotals(long from);
+
+    void printChanges(long date);
 };
 
 

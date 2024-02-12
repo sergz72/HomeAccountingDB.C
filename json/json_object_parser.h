@@ -5,7 +5,7 @@
 
 class JsonObjectParser {
 protected:
-    virtual int parseName(std::string *name) = 0;
+    virtual int parseName(std::string &name) = 0;
     virtual void parseValue(int field_id) = 0;
 public:
     JsonParser *parser;
