@@ -7,7 +7,7 @@
 #include "../json/json_object_parser.h"
 
 #define FIN_OP_PROPERTY_STRING_VALUE_LENGTH 80
-#define FIN_OP_PROPERTIES_CAPACITY 10
+#define FIN_OP_PROPERTIES_CAPACITY 5
 
 struct FinOpProperty {
      long numericValue;
