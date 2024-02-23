@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "json_parser.h"
+#include <cstring>
 
 void JsonToken::print() const {
     switch (typ) {

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "finance_operations.h"
+#include <cstring>
 
 #define PROPERTY_NUMERIC_VALUE 1
 #define PROPERTY_STRING_VALUE 2
