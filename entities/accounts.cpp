@@ -7,7 +7,7 @@
 #define ACCOUNT_ACTIVE_TO 4
 #define ACCOUNT_IS_CASH 5
 
-int AccountParser::parseName(std::string &n) {
+int AccountParser::parseName(std::string &n) const {
     if (n == "id")
         return ACCOUNT_ID;
     else if (n == "name")
@@ -23,9 +23,13 @@ int AccountParser::parseName(std::string &n) {
 }
 
 void AccountParser::parseValue(int field_id) {
+    long id;
     switch (field_id) {
         case ACCOUNT_ID:
-            account.id = parser->expectedInteger();
+            id = parser->expectedInteger();
+            if (id <= 0)
+                throw std::runtime_error("invalid account id");
+            account.id = id;
             break;
         case ACCOUNT_NAME:
             parser->expectedString();
@@ -42,36 +46,45 @@ void AccountParser::parseValue(int field_id) {
             account.active_to = parse_date(parser);
             break;
         case ACCOUNT_IS_CASH:
-            account.cashAccount = parser->expectedBool() ? -1 : 0;
+            account.cashAccount = parser->expectedBool() ? 0 : 1;
         default:
             break;
     }
 }
 
-Accounts::Accounts(const char *data_folder, long capacity) : JsonObjectArrayParser<Account>(capacity) {
+AccountsJsonSource::AccountsJsonSource(const char *data_folder) : JsonObjectArrayParser<Account>() {
     auto file_name = std::string(data_folder);
     file_name += "/accounts.json";
     parser = new AccountParser(file_name.c_str());
 }
 
-Account *Accounts::create(JsonParser *p) {
+AccountsJsonSource::~AccountsJsonSource() {
+    delete parser;
+}
+
+Account *AccountsJsonSource::create() {
     parser->parse(false);
     return &parser->account;
 }
 
-long Accounts::getId(Account *value) {
+unsigned long AccountsJsonSource::getId(const Account *value) const {
     return value->id;
 }
 
-bool Accounts::isValid(Account *value) {
+JsonParser* AccountsJsonSource::getParser() {
+    return parser->parser;
+}
+
+bool Accounts::isValid(const Account *value) const {
     return value->id > 0;
 }
 
 void Accounts::buildCashAccounts() {
+    std::map<long, long> cash_accounts;
     auto el = array;
     for (long i = 0; i < count; i++) {
         if (isValid(el)) {
-            if (el->cashAccount == -1) {
+            if (el->cashAccount == 0) {
                 if (cash_accounts.contains(el->currency.int_value))
                     throw std::runtime_error("duplicate cash account");
                 cash_accounts.insert({el->currency.int_value, el->id});
@@ -83,7 +96,7 @@ void Accounts::buildCashAccounts() {
     el = array;
     for (long i = 0; i < count; i++) {
         if (isValid(el)) {
-            if (el->cashAccount == 0) {
+            if (el->cashAccount == 1) {
                 if (!cash_accounts.contains(el->currency.int_value))
                     throw std::runtime_error("cash account not found");
                 el->cashAccount = cash_accounts[el->currency.int_value];
@@ -93,7 +106,7 @@ void Accounts::buildCashAccounts() {
     }
 }
 
-long Accounts::getCashAccount(long id) {
+unsigned long Accounts::getCashAccount(unsigned long id) {
     auto account = get(id);
     auto acc = account->cashAccount;
     if (acc < 0)

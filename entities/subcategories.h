@@ -25,8 +25,8 @@ enum SubcategoryCode {
 };
 
 struct Subcategory {
-    long id;
-    long category;
+    unsigned long id;
+    unsigned long category;
     char name[SUBCATEGORY_NAME_SIZE];
     SubcategoryCode code;
     SubcategoryOperationCode operationCode;
@@ -34,7 +34,7 @@ struct Subcategory {
 
 class SubcategoryParser: public JsonObjectParser {
 protected:
-    int parseName(std::string &n) override;
+    int parseName(std::string &n) const override;
     void parseValue(int field_id) override;
 public:
     Subcategory subcategory;
@@ -42,23 +42,27 @@ public:
     explicit SubcategoryParser(const char *file_name): JsonObjectParser(file_name) {}
 };
 
-class Subcategories: public JsonObjectArrayParser<Subcategory> {
+class SubcategoriesJsonSource: public JsonObjectArrayParser<Subcategory> {
     SubcategoryParser *parser;
 public:
-    explicit Subcategories(const char *data_folder, long capacity);
+    explicit SubcategoriesJsonSource(const char *data_folder);
 
-    inline ~Subcategories() {
+    inline ~SubcategoriesJsonSource() {
         delete parser;
     }
 
-    inline void parse() {
-        parse_array(parser->parser);
-    }
-
 protected:
-    Subcategory *create(JsonParser *p) override;
-    long getId(Subcategory *value) override;
-    bool isValid(Subcategory *value) override;
+    Subcategory *create() override;
+    unsigned long getId(const Subcategory *value) const override;
+    JsonParser *getParser() override;
+};
+
+class Subcategories: public ObjectArray<Subcategory> {
+public:
+    inline explicit Subcategories(ObjectArraySource<Subcategory> *source, unsigned long capacity):
+            ObjectArray<Subcategory>(source, capacity) {}
+protected:
+    bool isValid(const Subcategory *value) const override;
 };
 
 #endif

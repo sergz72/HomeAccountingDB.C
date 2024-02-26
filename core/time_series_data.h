@@ -5,6 +5,14 @@
 #include <concepts>
 #include <filesystem>
 #include <utility>
+#include <map>
+
+template<typename T>
+class DatedSource {
+public:
+    virtual T* load(std::vector<std::string> &files) = 0;
+    virtual long getDate(const char *folder, const std::filesystem::directory_entry &entry) = 0;
+};
 
 template<class T, class U>
 concept Derived = std::is_base_of<U, T>::value;
@@ -12,15 +20,26 @@ concept Derived = std::is_base_of<U, T>::value;
 template<typename K, Derived<JsonObjectArrayParser<K>> T>
 class TimeSeriesData {
     std::string path;
+
+    inline void addToMap(
+            DatedSource<T> &source,
+            std::map<unsigned long, std::vector<std::string>> &map,
+            const char *folder,
+            const std::filesystem::directory_entry &entry)
+    {
+        auto date = source->getDate(folder, entry);
+        auto key = validateDataIndex(date);
+        map[key].add(entry.path().string());
+    }
 protected:
-    long capacity;
-    long count;
+    unsigned long capacity;
+    unsigned long count;
     T **data;
 
-    virtual T* createObject() = 0;
-    virtual long getDataIndex(long date) = 0;
+    virtual T* createObject() const = 0;
+    virtual long calculateKey(long date) const = 0;
 public:
-    inline explicit TimeSeriesData(std::string _path, long _capacity) {
+    inline explicit TimeSeriesData(DatedSource<T> &source, unsigned long _capacity) {
         path = std::move(_path);
         capacity = _capacity;
         count = 0;
@@ -31,30 +50,34 @@ public:
         delete data;
     }
 
-    inline long validateDataIndex(long date) {
-        auto data_index = getDataIndex(date);
-        if (data_index < 0 || data_index >= capacity)
-            throw std::runtime_error("data index is out of bounds");
-        return data_index;
+    inline unsigned long validateDataIndex(long date) {
+        auto key = calculateKey(date);
+        if (key < 0 || key >= capacity)
+            throw std::runtime_error("key is out of bounds");
+        return key;
     }
 
-    inline void load_json() {
+    inline void load(DatedSource<T> &source, const char &folder) {
+        std::map<unsigned long, std::vector<std::string>> fileMap;
         for (const auto & entry1 : std::filesystem::directory_iterator(path)) {
             if (entry1.is_directory()) {
-                auto date = atol(entry1.path().filename().c_str());
-                auto data_index = validateDataIndex(date);
-                if (data_index >= count)
-                    count = data_index + 1;
-                auto obj = data[data_index];
-                if (obj == nullptr) {
-                    obj = createObject();
-                    data[data_index] = obj;
-                }
                 for (const auto & entry2 : std::filesystem::directory_iterator(entry1)) {
-                    obj->parse(entry2.path().c_str(), date);
+                    addToMap(source, fileMap, entry1.path().filename().c_str(), entry2);
                 }
             }
+            else
+                addToMap(fileMap, nullptr, entry1);
         }
+        for (auto const& entry: fileMap) {
+
+        }
+        /*if (key >= count)
+            count = key + 1;
+        auto obj = data[key];
+        if (obj == nullptr) {
+            obj = createObject();
+            data[key] = obj;
+        }*/
     }
 };
 

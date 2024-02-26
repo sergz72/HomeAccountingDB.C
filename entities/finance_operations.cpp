@@ -14,7 +14,7 @@
 #define FINOP_SUBCATEGORY 5
 #define FINOP_PROPERTIES 6
 
-int FinOpPropertyParser::parseName(std::string &n) {
+int FinOpPropertyParser::parseName(std::string &n) const {
     if (n == "numericValue" || n == "NumericValue")
         return PROPERTY_NUMERIC_VALUE;
     if (n == "stringValue" || n == "StringValue")
@@ -71,20 +71,28 @@ void FinOpPropertyParser::parseValue(int field_id) {
     }
 }
 
-FinOpProperty *FinOpProperties::create(JsonParser *p) {
+FinOpPropertiesJsonSource::~FinOpPropertiesJsonSource() {
+    delete parser;
+}
+
+FinOpProperty *FinOpPropertiesJsonSource::create() {
     parser->parse(false);
     return &parser->property;
 }
 
-long FinOpProperties::getId(FinOpProperty *value) {
-    return -1;
+unsigned long FinOpPropertiesJsonSource::getId(const FinOpProperty *value) const {
+    return 0;
 }
 
-bool FinOpProperties::isValid(FinOpProperty *value) {
+JsonParser *FinOpPropertiesJsonSource::getParser() {
+    return parser->parser;
+}
+
+bool FinOpProperties::isValid(const FinOpProperty *value) const {
     return true;
 }
 
-int FinanceOperationParser::parseName(std::string &n) {
+int FinanceOperationParser::parseName(std::string &n) const {
     if (n == "id" || n == "Id")
         return FINOP_ID;
     if (n == "amount" || n == "Amount")
@@ -103,6 +111,7 @@ int FinanceOperationParser::parseName(std::string &n) {
 
 void FinanceOperationParser::parseValue(int field_id) {
     JsonTokenType typ;
+    long id;
     switch (field_id) {
         case FINOP_AMOUNT:
             parser->nextToken();
@@ -123,18 +132,23 @@ void FinanceOperationParser::parseValue(int field_id) {
             operation.summa = parser->current.int_value;
             break;
         case FINOP_ACCOUNT:
-            operation.account = parser->expectedInteger();
+            id = parser->expectedInteger();
+            if (id <= 0)
+                throw std::runtime_error("invalid account id");
+            operation.account = id;
             break;
         case FINOP_SUBCATEGORY:
-            operation.subcategory = parser->expectedInteger();
+            id = parser->expectedInteger();
+            if (id <= 0)
+                throw std::runtime_error("invalid subcategory id");
+            operation.subcategory = id;
             break;
         case FINOP_PROPERTIES:
             parser->nextToken();
             if (parser->current.isNull())
                 operation.finOpProperties = nullptr;
             else {
-                operation.finOpProperties = new FinOpProperties(parser, FIN_OP_PROPERTIES_CAPACITY);
-                operation.finOpProperties->parse();
+                operation.finOpProperties = new FinOpProperties(propertiesSource, propertiesCapacity);
             }
             break;
         case FINOP_ID:
@@ -145,17 +159,7 @@ void FinanceOperationParser::parseValue(int field_id) {
     }
 }
 
-FinanceOperation *FinanceOperations::create(JsonParser *p) {
-    parser->parse(false);
-    parser->operation.date = date;
-    return &parser->operation;
-}
-
-long FinanceOperations::getId(FinanceOperation *value) {
-    return -1;
-}
-
-bool FinanceOperations::isValid(FinanceOperation *value) {
+bool FinanceOperations::isValid(const FinanceOperation *value) const {
     return true;
 }
 

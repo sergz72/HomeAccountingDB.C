@@ -8,6 +8,6 @@ union CharInt {
     long int_value;
 };
 
-long parse_date(JsonParser *parser);
+unsigned long parse_date(JsonParser *parser);
 
 #endif

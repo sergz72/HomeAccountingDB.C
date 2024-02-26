@@ -10,7 +10,6 @@
 #include "accounts.h"
 
 #define FIN_OP_PROPERTY_STRING_VALUE_LENGTH 80
-#define FIN_OP_PROPERTIES_CAPACITY 5
 
 enum FinOpPropertyCode {
     amou,
@@ -24,13 +23,13 @@ enum FinOpPropertyCode {
 struct FinOpProperty {
      long numericValue;
      char stringValue[FIN_OP_PROPERTY_STRING_VALUE_LENGTH];
-     long dateValue;
+     unsigned long dateValue;
      FinOpPropertyCode code;
 };
 
 class FinOpPropertyParser: public JsonObjectParser {
 protected:
-    int parseName(std::string &n) override;
+    int parseName(std::string &n) const override;
     void parseValue(int field_id) override;
 public:
     FinOpProperty property;
@@ -38,44 +37,53 @@ public:
     explicit FinOpPropertyParser(JsonParser *p): JsonObjectParser(p) {}
 };
 
-class FinOpProperties: public JsonObjectArrayParser<FinOpProperty> {
+class FinOpPropertiesJsonSource: public JsonObjectArrayParser<FinOpProperty> {
     FinOpPropertyParser *parser;
 public:
-    inline explicit FinOpProperties(JsonParser *p, long capacity): JsonObjectArrayParser<FinOpProperty>(capacity) {
+    inline explicit FinOpPropertiesJsonSource(JsonParser *p): JsonObjectArrayParser<FinOpProperty>() {
         parser = new FinOpPropertyParser(p);
     }
 
-    inline ~FinOpProperties() {
-        delete parser;
-    }
+    ~FinOpPropertiesJsonSource() override;
 
-    inline void parse() {
-        parse_array(parser->parser, false);
+protected:
+    FinOpProperty *create() override;
+    unsigned long getId(const FinOpProperty *value) const override;
+    JsonParser *getParser() override;
+};
+
+class FinOpProperties: public ObjectArray<FinOpProperty> {
+public:
+    inline explicit FinOpProperties(ObjectArraySource<FinOpProperty> *source, long capacity):
+        ObjectArray<FinOpProperty>(source, capacity) {
     }
 
 protected:
-    FinOpProperty *create(JsonParser *p) override;
-    long getId(FinOpProperty *value) override;
-    bool isValid(FinOpProperty *value) override;
+    bool isValid(const FinOpProperty *value) const override;
 };
 
 struct FinanceOperation {
-    long date;
+    unsigned long date;
     long amount;
     long summa;
-    long subcategory;
-    long account;
+    unsigned long subcategory;
+    unsigned long account;
     FinOpProperties *finOpProperties;
 };
 
 class FinanceOperationParser: public JsonObjectParser {
+    FinOpPropertiesJsonSource *propertiesSource;
+    long propertiesCapacity;
 protected:
-    int parseName(std::string &n) override;
+    int parseName(std::string &n) const override;
     void parseValue(int field_id) override;
 public:
     FinanceOperation operation;
 
-    explicit FinanceOperationParser(const char * file_name): JsonObjectParser(file_name) {}
+    explicit FinanceOperationParser(const char * file_name, long _propertiesCapacity): JsonObjectParser(file_name) {
+        propertiesSource = new FinOpPropertiesJsonSource(parser);
+        propertiesCapacity = _propertiesCapacity;
+    }
 };
 
 struct FinanceChanges {
@@ -88,25 +96,14 @@ struct FinanceChanges {
     }
 };
 
-class FinanceOperations: public JsonObjectArrayParser<FinanceOperation> {
-    FinanceOperationParser *parser;
-    long date;
+class FinanceOperations: public ObjectArray<FinanceOperation> {
 protected:
-    FinanceOperation *create(JsonParser *p) override;
-    long getId(FinanceOperation *value) override;
-    bool isValid(FinanceOperation *value) override;
+    bool isValid(const FinanceOperation *value) const override;
 public:
     std::map<long, long> totals;
 
-    inline explicit FinanceOperations(long capacity): JsonObjectArrayParser<FinanceOperation>(capacity) {
-        parser = nullptr;
-    }
-
-    inline void parse(const char *file_name, long _date) {
-        date = _date;
-        parser = new FinanceOperationParser(file_name);
-        parse_array(parser->parser);
-        delete parser;
+    inline explicit FinanceOperations(ObjectArraySource<FinanceOperation> *source, long capacity):
+        ObjectArray<FinanceOperation>(source, capacity) {
     }
 
     void calculateTotals(FinanceOperations *prev, Accounts *accounts, Subcategories *subcategories);

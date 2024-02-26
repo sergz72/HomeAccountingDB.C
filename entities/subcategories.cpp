@@ -7,7 +7,7 @@
 #define SUBCATEGORY_CODE 4
 #define SUBCATEGORY_OPERATION_CODE 5
 
-int SubcategoryParser::parseName(std::string &n) {
+int SubcategoryParser::parseName(std::string &n) const {
     if (n == "id")
         return SUBCATEGORY_ID;
     else if (n == "name")
@@ -76,21 +76,15 @@ void SubcategoryParser::parseValue(int field_id) {
     }
 }
 
-Subcategories::Subcategories(const char *data_folder, long capacity): JsonObjectArrayParser<Subcategory>(capacity) {
-    auto file_name = std::string(data_folder);
-    file_name += "/subcategories.json";
-    parser = new SubcategoryParser(file_name.c_str());
-}
-
-Subcategory *Subcategories::create(JsonParser *p) {
+Subcategory *SubcategoriesJsonSource::create() {
     parser->parse(false);
     return &parser->subcategory;
 }
 
-long Subcategories::getId(Subcategory *value) {
+unsigned long SubcategoriesJsonSource::getId(const Subcategory *value) const {
     return value->id;
 }
 
-bool Subcategories::isValid(Subcategory *value) {
+bool Subcategories::isValid(const Subcategory *value) const {
     return value->id > 0;
 }

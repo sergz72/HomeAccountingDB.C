@@ -77,7 +77,7 @@ public:
         isString();
     }
 
-    inline void isString() {
+    inline void isString() const {
         if (current.typ != str)
             throw std::runtime_error("string expected");
     }
@@ -87,7 +87,7 @@ public:
         return isInteger();
     }
 
-    inline long isInteger() {
+    inline long isInteger() const {
         if (current.typ != integer)
             throw std::runtime_error("integer expected");
         return current.int_value;

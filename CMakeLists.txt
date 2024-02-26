@@ -19,4 +19,5 @@ add_executable(HomeAccountingDB main.cpp
         entities/common.cpp
         core/time_series_data.h
         db.cpp
-        db.h)
+        db.h
+        core/object_array.h)

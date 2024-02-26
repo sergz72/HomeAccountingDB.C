@@ -3,25 +3,26 @@
 
 #include <cstdlib>
 #include "json_parser.h"
+#include "../core/object_array.h"
 
 template<typename T>
-class JsonObjectArrayParser {
+class JsonObjectArrayParser: public ObjectArraySource<T> {
 protected:
-    T *array;
-    long capacity;
-    long count;
+    virtual T *create() = 0;
+    virtual unsigned long getId(const T *value) const = 0;
+    virtual JsonParser *getParser() = 0;
 
-    virtual T *create(JsonParser *p) = 0;
-    virtual long getId(T *value) = 0;
-
-    void parse_array(JsonParser *p, bool call_expected = true) {
+    unsigned long parse_array(T *array, unsigned long &count, unsigned long capacity,
+                              bool call_expected = true) {
+        auto p = getParser();
+        unsigned long added = 0;
         if (call_expected)
             p->expected('[');
         else
             p->is('[');
         p->nextToken();
         while (p->current.typ != character || p->current.char_value != ']') {
-            T *value = create(p);
+            T *value = create();
             long id = getId(value);
             if (id > 0) {
                 if (id >= capacity)
@@ -36,33 +37,17 @@ protected:
                 p->nextToken();
             else if (p->current.char_value != ']')
                 throw std::runtime_error(", or ] expected");
+            added++;
         }
-    }
-public:
-    inline explicit JsonObjectArrayParser(long _capacity) {
-        array = (T*)calloc(_capacity, sizeof(T));
-        count = 0;
-        capacity = _capacity;
+        return added;
     }
 
-    inline ~JsonObjectArrayParser() {
-        free(array);
+    virtual unsigned long load(T *array, unsigned long &count, unsigned long capacity) {
+        return parse_array(array, count, capacity);
     }
 
-    T *get(long id) {
-        if (id < 0 || id >= capacity)
-            throw std::runtime_error("get: index is out of bounds");
-        T *element = &array[id];
-        if (!isValid(element))
-            throw std::runtime_error("invalid element id");
-        return element;
+    virtual void save(T *array, unsigned long count, void *to) {
     }
-
-    inline long getCount() {
-        return count;
-    }
-
-    virtual bool isValid(T *value) = 0;
 };
 
 #endif

@@ -4,21 +4,22 @@
 #include <map>
 #include "../json/json_object_array_parser.h"
 #include "../json/json_object_parser.h"
+#include "../core/object_array.h"
 #include "common.h"
 
 #define ACCOUNT_NAME_SIZE 80
 
 struct Account {
-    long id;
+    unsigned long id;
     char name[ACCOUNT_NAME_SIZE];
     CharInt currency;
-    long active_to;
-    long cashAccount;
+    unsigned long active_to;
+    unsigned long cashAccount;
 };
 
 class AccountParser: public JsonObjectParser {
 protected:
-    int parseName(std::string &n) override;
+    int parseName(std::string &n) const override;
     void parseValue(int field_id) override;
 public:
     Account account;
@@ -26,28 +27,29 @@ public:
     explicit AccountParser(const char * file_name): JsonObjectParser(file_name) {}
 };
 
-class Accounts: public JsonObjectArrayParser<Account> {
+class AccountsJsonSource: public JsonObjectArrayParser<Account> {
     AccountParser *parser;
-    std::map<long, long> cash_accounts;
 public:
-    explicit Accounts(const char *data_folder, long capacity);
+    explicit AccountsJsonSource(const char *data_folder);
+    ~AccountsJsonSource() override;
+protected:
+    Account *create() override;
+    unsigned long getId(const Account *value) const override;
+    JsonParser *getParser() override;
+};
 
-    void buildCashAccounts();
-
-    inline ~Accounts() {
-        delete parser;
-    }
-
-    inline void parse() {
-        parse_array(parser->parser);
+class Accounts: public ObjectArray<Account> {
+public:
+    inline explicit Accounts(ObjectArraySource<Account> *source, unsigned long capacity):
+        ObjectArray<Account>(source, capacity) {
         buildCashAccounts();
     }
 
-    long getCashAccount(long id);
+    void buildCashAccounts();
+
+    unsigned long getCashAccount(unsigned long id);
 protected:
-    Account *create(JsonParser *p) override;
-    long getId(Account *value) override;
-    bool isValid(Account *value) override;
+    bool isValid(const Account *value) const override;
 };
 
 #endif
