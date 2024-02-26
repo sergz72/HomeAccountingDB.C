@@ -1,46 +1,43 @@
 #ifndef H_TIME_SERIES_DATA_H
 #define H_TIME_SERIES_DATA_H
 
-#include "../json/json_object_array_parser.h"
-#include <concepts>
+#include "object_array.h"
 #include <filesystem>
-#include <utility>
 #include <map>
+#include <utility>
+#include <vector>
 
 template<typename T>
 class DatedSource {
 public:
-    virtual T* load(std::vector<std::string> &files) = 0;
+    virtual T* load(const std::vector<std::string> &files) = 0;
     virtual long getDate(const char *folder, const std::filesystem::directory_entry &entry) = 0;
 };
 
-template<class T, class U>
-concept Derived = std::is_base_of<U, T>::value;
-
-template<typename K, Derived<JsonObjectArrayParser<K>> T>
+template<typename T>
 class TimeSeriesData {
     std::string path;
+    DatedSource<T> *source;
 
     inline void addToMap(
-            DatedSource<T> &source,
             std::map<unsigned long, std::vector<std::string>> &map,
             const char *folder,
             const std::filesystem::directory_entry &entry)
     {
         auto date = source->getDate(folder, entry);
         auto key = validateDataIndex(date);
-        map[key].add(entry.path().string());
+        map[key].push_back(entry.path().string());
     }
 protected:
     unsigned long capacity;
     unsigned long count;
     T **data;
 
-    virtual T* createObject() const = 0;
     virtual long calculateKey(long date) const = 0;
 public:
-    inline explicit TimeSeriesData(DatedSource<T> &source, unsigned long _capacity) {
-        path = std::move(_path);
+    inline explicit TimeSeriesData(std::string &folder, DatedSource<T> *_source, unsigned long _capacity) {
+        path = std::move(folder);
+        source = _source;
         capacity = _capacity;
         count = 0;
         data = new T*[_capacity]();
@@ -57,27 +54,23 @@ public:
         return key;
     }
 
-    inline void load(DatedSource<T> &source, const char &folder) {
+    inline void load() {
         std::map<unsigned long, std::vector<std::string>> fileMap;
         for (const auto & entry1 : std::filesystem::directory_iterator(path)) {
             if (entry1.is_directory()) {
                 for (const auto & entry2 : std::filesystem::directory_iterator(entry1)) {
-                    addToMap(source, fileMap, entry1.path().filename().c_str(), entry2);
+                    addToMap(fileMap, entry1.path().filename().c_str(), entry2);
                 }
             }
             else
                 addToMap(fileMap, nullptr, entry1);
         }
         for (auto const& entry: fileMap) {
-
+            auto object = source->load(entry.second);
+            if (entry.first >= count)
+                count = entry.first + 1;
+            data[entry.first] = object;
         }
-        /*if (key >= count)
-            count = key + 1;
-        auto obj = data[key];
-        if (obj == nullptr) {
-            obj = createObject();
-            data[key] = obj;
-        }*/
     }
 };
 

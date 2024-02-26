@@ -20,4 +20,6 @@ add_executable(HomeAccountingDB main.cpp
         core/time_series_data.h
         db.cpp
         db.h
-        core/object_array.h)
+        core/object_array.h
+        jsonconfig/accounts.cpp
+        jsonconfig/accounts.h)

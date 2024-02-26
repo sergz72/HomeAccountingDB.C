@@ -100,16 +100,16 @@ class FinanceOperations: public ObjectArray<FinanceOperation> {
 protected:
     bool isValid(const FinanceOperation *value) const override;
 public:
-    std::map<long, long> totals;
+    std::map<unsigned long, long> totals;
 
     inline explicit FinanceOperations(ObjectArraySource<FinanceOperation> *source, long capacity):
         ObjectArray<FinanceOperation>(source, capacity) {
     }
 
     void calculateTotals(FinanceOperations *prev, Accounts *accounts, Subcategories *subcategories);
-    void buildChanges(std::map<long, FinanceChanges> &changes, long from_date, long to_date, Accounts *accounts,
-                      Subcategories *subcategories);
-    void printChanges(long _date, Accounts *accounts, Subcategories *subcategories);
+    void buildChanges(std::map<unsigned long, FinanceChanges> &changes, unsigned long from_date, unsigned long to_date,
+                      Accounts *accounts, Subcategories *subcategories);
+    void printChanges(unsigned long _date, Accounts *accounts, Subcategories *subcategories);
 };
 
 #endif

@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
     try {
         auto date = atol(argv[2]);
         auto begin = std::chrono::steady_clock::now();
-        auto db = new DB(argv[1], 2012, 6, 300, 2000, 300, 1000);
-        db->load_json();
+        auto db = new DB(argv[1], 2012, 6, 300, 2000, 300, 1000, nullptr);
+        db->load();
         auto end = std::chrono::steady_clock::now();
         std::cout << "Database loaded in " << std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count() << " us" << std::endl;
         begin = std::chrono::steady_clock::now();

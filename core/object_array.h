@@ -9,7 +9,7 @@ class ObjectArraySource {
 public:
     virtual unsigned long load(T *array, unsigned long &count, unsigned long capacity) = 0;
     virtual void save(T *array, unsigned long count, void *to) = 0;
-    virtual ~ObjectArraySource() = 0;
+    virtual ~ObjectArraySource() = default;
 };
 
 template<typename T>

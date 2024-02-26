@@ -85,6 +85,10 @@ unsigned long SubcategoriesJsonSource::getId(const Subcategory *value) const {
     return value->id;
 }
 
+JsonParser* SubcategoriesJsonSource::getParser() {
+    return parser->parser;
+}
+
 bool Subcategories::isValid(const Subcategory *value) const {
     return value->id > 0;
 }

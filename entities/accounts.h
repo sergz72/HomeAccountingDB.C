@@ -1,9 +1,6 @@
 #ifndef H_ACCOUNTS_H
 #define H_ACCOUNTS_H
 
-#include <map>
-#include "../json/json_object_array_parser.h"
-#include "../json/json_object_parser.h"
 #include "../core/object_array.h"
 #include "common.h"
 
@@ -15,27 +12,6 @@ struct Account {
     CharInt currency;
     unsigned long active_to;
     unsigned long cashAccount;
-};
-
-class AccountParser: public JsonObjectParser {
-protected:
-    int parseName(std::string &n) const override;
-    void parseValue(int field_id) override;
-public:
-    Account account;
-
-    explicit AccountParser(const char * file_name): JsonObjectParser(file_name) {}
-};
-
-class AccountsJsonSource: public JsonObjectArrayParser<Account> {
-    AccountParser *parser;
-public:
-    explicit AccountsJsonSource(const char *data_folder);
-    ~AccountsJsonSource() override;
-protected:
-    Account *create() override;
-    unsigned long getId(const Account *value) const override;
-    JsonParser *getParser() override;
 };
 
 class Accounts: public ObjectArray<Account> {

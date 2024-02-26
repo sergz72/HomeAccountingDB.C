@@ -163,7 +163,7 @@ bool FinanceOperations::isValid(const FinanceOperation *value) const {
     return true;
 }
 
-static void handleTrfrWithSumma(std::map<long, FinanceChanges> &changes, FinanceOperation *op, long summa) {
+static void handleTrfrWithSumma(std::map<unsigned long, FinanceChanges> &changes, FinanceOperation *op, long summa) {
     auto properties = op->finOpProperties;
     if (properties == nullptr || properties->getCount() != 1)
         return;
@@ -174,7 +174,7 @@ static void handleTrfrWithSumma(std::map<long, FinanceChanges> &changes, Finance
     changes[prop->numericValue].income += op->summa;
 }
 
-static void apply(std::map<long, FinanceChanges> &changes, FinanceOperation *op, Accounts *accounts,
+static void apply(std::map<unsigned long, FinanceChanges> &changes, FinanceOperation *op, Accounts *accounts,
            Subcategories *subcategories) {
     auto subcategory = subcategories->get(op->subcategory);
     switch (subcategory->operationCode) {
@@ -211,14 +211,14 @@ static void apply(std::map<long, FinanceChanges> &changes, FinanceOperation *op,
     }
 }
 
-void initChanges(std::map<long, FinanceChanges> &changes, std::map<long, long> &totals) {
+void initChanges(std::map<unsigned long, FinanceChanges> &changes, std::map<unsigned long, long> &totals) {
     changes.clear();
     for (auto kv : totals) {
         changes.insert({kv.first, FinanceChanges(kv.second, 0, 0)});
     }
 }
 
-void initTotals(std::map<long, long> &totals, std::map<long, FinanceChanges> &changes) {
+void initTotals(std::map<unsigned long, long> &totals, std::map<unsigned long, FinanceChanges> &changes) {
     totals.clear();
     for (auto kv : changes) {
         totals.insert({kv.first, kv.second.getEndSumma()});
@@ -227,15 +227,15 @@ void initTotals(std::map<long, long> &totals, std::map<long, FinanceChanges> &ch
 
 void FinanceOperations::calculateTotals(FinanceOperations *prev, Accounts *accounts, Subcategories *subcategories) {
     if (prev != nullptr) {
-        std::map<long, FinanceChanges> changes;
+        std::map<unsigned long, FinanceChanges> changes;
         initChanges(changes, prev->totals);
         prev->buildChanges(changes, 1, 99999999, accounts, subcategories);
         initTotals(totals, changes);
     }
 }
 
-void FinanceOperations::buildChanges(std::map<long, FinanceChanges> &changes, long from_date, long to_date,
-                                     Accounts *accounts, Subcategories *subcategories) {
+void FinanceOperations::buildChanges(std::map<unsigned long, FinanceChanges> &changes, unsigned long from_date,
+                                     unsigned long to_date, Accounts *accounts, Subcategories *subcategories) {
     FinanceOperation *op = array;
     for (long i = 0; i < count; i++) {
         if (op->date >= from_date && op->date <= to_date)
@@ -244,11 +244,11 @@ void FinanceOperations::buildChanges(std::map<long, FinanceChanges> &changes, lo
     }
 }
 
-void FinanceOperations::printChanges(long _date, Accounts *accounts, Subcategories *subcategories) {
-    std::map<long, FinanceChanges> changes;
+void FinanceOperations::printChanges(unsigned long _date, Accounts *accounts, Subcategories *subcategories) {
+    std::map<unsigned long, FinanceChanges> changes;
     initChanges(changes, totals);
     buildChanges(changes, 1, _date - 1, accounts, subcategories);
-    std::map<long, long> day_totals;
+    std::map<unsigned long, long> day_totals;
     initTotals(day_totals, changes);
     initChanges(changes, day_totals);
     buildChanges(changes, _date, _date, accounts, subcategories);
