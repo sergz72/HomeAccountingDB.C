@@ -22,4 +22,11 @@ add_executable(HomeAccountingDB main.cpp
         db.h
         core/object_array.h
         jsonconfig/accounts.cpp
-        jsonconfig/accounts.h)
+        jsonconfig/accounts.h
+        jsonconfig/subcategories.cpp
+        jsonconfig/subcategories.h
+        jsonconfig/finance_operations.cpp
+        jsonconfig/finance_operations.h
+        jsonconfig/json_db_config.cpp
+        jsonconfig/json_db_config.h
+        db_config.h)
