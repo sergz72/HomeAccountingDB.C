@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include "db.h"
+#include "jsonconfig/json_db_config.h"
 
 void usage() {
     std::cout << "Usage: home_accounting_db data_folder_path date" << std::endl;
@@ -23,7 +24,8 @@ int main(int argc, char **argv) {
     try {
         auto date = atol(argv[2]);
         auto begin = std::chrono::steady_clock::now();
-        auto db = new DB(argv[1], 2012, 6, 300, 2000, 300, 1000, nullptr);
+        auto configuration = new JsonDBConfig(argv[1], 300, 5);
+        auto db = new DB(argv[1], 2012, 6, 300, 2000, 1000, configuration);
         db->load();
         auto end = std::chrono::steady_clock::now();
         std::cout << "Database loaded in " << std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count() << " us" << std::endl;

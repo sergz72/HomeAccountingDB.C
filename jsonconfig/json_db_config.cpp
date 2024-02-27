@@ -1,14 +1,78 @@
 #include "json_db_config.h"
 #include "accounts.h"
+#include "subcategories.h"
+#include "finance_operations.h"
+
+class JsonFinanceOperationsSource: public JsonObjectArrayParser<FinanceOperation> {
+    FinanceOperationParser *parser;
+    std::vector<std::string> files;
+    long propertiesCapacity;
+public:
+    explicit JsonFinanceOperationsSource(const std::vector<std::string>& _files, long _propertiesCapacity) {
+        files = _files;
+        propertiesCapacity = _propertiesCapacity;
+    }
+
+    unsigned long load(FinanceOperation *array, unsigned long &count, unsigned long capacity) override;
+
+    FinanceOperation *create() override;
+    unsigned long getId(const FinanceOperation *value) const override;
+    JsonParser *getParser() override;
+};
+
+FinanceOperation *JsonFinanceOperationsSource::create() {
+    parser->parse(false);
+    return &parser->operation;
+}
+
+unsigned long JsonFinanceOperationsSource::getId(const FinanceOperation *value) const {
+    return 0;
+}
+
+JsonParser *JsonFinanceOperationsSource::getParser() {
+    return parser->parser;
+}
+
+unsigned long JsonFinanceOperationsSource::load(FinanceOperation *array, unsigned long &count, unsigned long capacity) {
+    unsigned long added = 0;
+    for (const auto& file: files) {
+        parser = new FinanceOperationParser(file.c_str(), propertiesCapacity);
+        added += JsonObjectArrayParser::load(array, count, capacity);
+        delete parser;
+    }
+    return added;
+}
+
+class JsonDatedSource: public DatedSource<FinanceOperations> {
+    long capacity;
+    long propertiesCapacity;
+public:
+    inline explicit JsonDatedSource(long _capacity, long _propertiesCapacity) {
+        capacity = _capacity;
+        propertiesCapacity = _propertiesCapacity;
+    }
+
+    FinanceOperations* load(const std::vector<std::string> &files) override;
+    long getDate(const char *folder, const std::filesystem::directory_entry &entry) override;
+};
+
+FinanceOperations* JsonDatedSource::load(const std::vector<std::string> &files) {
+    auto operationsSource = new JsonFinanceOperationsSource(files, propertiesCapacity);
+    return new FinanceOperations(operationsSource, capacity);
+}
+
+long JsonDatedSource::getDate(const char *folder, const std::filesystem::directory_entry &entry) {
+    return atol(folder);
+}
 
 ObjectArraySource<Account> *JsonDBConfig::getAccountsSource() {
-    return new AccountsJsonSource()
+    return new AccountsJsonSource(base_folder);
 }
 
 ObjectArraySource<Subcategory> *JsonDBConfig::getSubcategoriesSource() {
-
+    return new SubcategoriesJsonSource(base_folder);
 }
 
 DatedSource<FinanceOperations> *JsonDBConfig::getMainDataSource() {
-
+    return new JsonDatedSource(capacity, propertiesCapacity);
 }
