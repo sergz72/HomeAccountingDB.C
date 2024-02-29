@@ -23,6 +23,10 @@ public:
         parser = new FinOpPropertyParser(p);
     }
 
+    unsigned long load(FinOpProperty *array, unsigned long &count, unsigned long capacity) override {
+        return parse_array(array, count, capacity, false);
+    }
+
     ~FinOpPropertiesJsonSource() override;
 
 protected:

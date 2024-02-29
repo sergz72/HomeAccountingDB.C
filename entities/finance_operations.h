@@ -24,10 +24,10 @@ struct FinOpProperty {
      FinOpPropertyCode code;
 };
 
-class FinOpProperties: public ObjectArray<FinOpProperty> {
+class FinOpProperties final : public ObjectArray<FinOpProperty> {
 public:
     inline explicit FinOpProperties(ObjectArraySource<FinOpProperty> *source, long capacity):
-        ObjectArray<FinOpProperty>(source, capacity) {
+        ObjectArray(source, capacity) {
     }
 
 protected:

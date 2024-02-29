@@ -18,9 +18,7 @@ public:
         parser = p;
     }
 
-    inline ~JsonObjectParser() {
-        delete parser;
-    }
+    virtual ~JsonObjectParser();
 
     void parse(bool call_expected);
 };

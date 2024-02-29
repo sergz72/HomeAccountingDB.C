@@ -1,5 +1,9 @@
 #include "json_object_parser.h"
 
+JsonObjectParser::~JsonObjectParser() {
+    delete parser;
+}
+
 void JsonObjectParser::parse(bool call_expected) {
     if (call_expected)
         parser->expected('{');
