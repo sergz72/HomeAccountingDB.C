@@ -29,7 +29,7 @@ protected:
             delete source;
     }
 
-    inline ~ObjectArray() {
+    virtual ~ObjectArray() {
         free(array);
     }
 

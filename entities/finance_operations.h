@@ -2,7 +2,6 @@
 #define H_FINANCE_OPERATIONS_H
 
 #include <map>
-#include "common.h"
 #include "subcategories.h"
 #include "accounts.h"
 
@@ -26,7 +25,7 @@ struct FinOpProperty {
 
 class FinOpProperties final : public ObjectArray<FinOpProperty> {
 public:
-    inline explicit FinOpProperties(ObjectArraySource<FinOpProperty> *source, long capacity):
+    explicit FinOpProperties(ObjectArraySource<FinOpProperty> *source, long capacity):
         ObjectArray(source, capacity, false) {
     }
 
@@ -48,7 +47,7 @@ struct FinanceChanges {
     long income;
     long expenditure;
 
-    inline long getEndSumma() const {
+    long getEndSumma() const {
         return summa + income - expenditure;
     }
 };
@@ -59,7 +58,7 @@ protected:
 public:
     std::map<unsigned long, long> totals;
 
-    inline explicit FinanceOperations(ObjectArraySource<FinanceOperation> *source, long capacity):
+    explicit FinanceOperations(ObjectArraySource<FinanceOperation> *source, long capacity):
         ObjectArray(source, capacity) {
     }
 
