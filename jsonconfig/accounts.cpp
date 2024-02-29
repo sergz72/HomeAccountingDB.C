@@ -1,4 +1,5 @@
 #include "accounts.h"
+#include <cstring>
 
 #define ACCOUNT_ID 1
 #define ACCOUNT_NAME 2

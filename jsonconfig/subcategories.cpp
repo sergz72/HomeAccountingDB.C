@@ -1,4 +1,5 @@
 #include "subcategories.h"
+#include <cstring>
 
 #define SUBCATEGORY_ID 1
 #define SUBCATEGORY_NAME 2

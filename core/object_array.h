@@ -23,6 +23,7 @@ protected:
     inline explicit ObjectArray(ObjectArraySource<T> *source, unsigned long _capacity) {
         array = (T*)calloc(_capacity, sizeof(T));
         capacity = _capacity;
+        count = 0;
         active_count = source->load(array, count, _capacity);
         delete source;
     }
