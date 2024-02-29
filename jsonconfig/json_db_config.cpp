@@ -5,10 +5,10 @@
 
 class JsonFinanceOperationsSource: public JsonObjectArrayParser<FinanceOperation> {
     FinanceOperationParser *parser;
-    std::vector<std::string> files;
+    std::vector<FileWithDate> files;
     long propertiesCapacity;
 public:
-    explicit JsonFinanceOperationsSource(const std::vector<std::string>& _files, long _propertiesCapacity) {
+    explicit JsonFinanceOperationsSource(const std::vector<FileWithDate>& _files, long _propertiesCapacity) {
         files = _files;
         propertiesCapacity = _propertiesCapacity;
     }
@@ -36,9 +36,12 @@ JsonParser *JsonFinanceOperationsSource::getParser() {
 unsigned long JsonFinanceOperationsSource::load(FinanceOperation *array, unsigned long &count, unsigned long capacity) {
     unsigned long added = 0;
     for (const auto& file: files) {
-        parser = new FinanceOperationParser(file.c_str(), propertiesCapacity);
+        parser = new FinanceOperationParser(file.file_name.c_str(), propertiesCapacity);
+        auto from = count;
         added += JsonObjectArrayParser::load(array, count, capacity);
         delete parser;
+        while (from < count)
+            array[from++].date = file.date;
     }
     return added;
 }
@@ -52,11 +55,11 @@ public:
         propertiesCapacity = _propertiesCapacity;
     }
 
-    FinanceOperations* load(const std::vector<std::string> &files) override;
+    FinanceOperations* load(const std::vector<FileWithDate> &files) override;
     long getDate(const char *folder, const std::filesystem::directory_entry &entry) override;
 };
 
-FinanceOperations* JsonDatedSource::load(const std::vector<std::string> &files) {
+FinanceOperations* JsonDatedSource::load(const std::vector<FileWithDate> &files) {
     auto operationsSource = new JsonFinanceOperationsSource(files, propertiesCapacity);
     return new FinanceOperations(operationsSource, capacity);
 }

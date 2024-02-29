@@ -1,7 +1,6 @@
 #ifndef H_TIME_SERIES_DATA_H
 #define H_TIME_SERIES_DATA_H
 
-#include "object_array.h"
 #include <filesystem>
 #include <map>
 #include <utility>
@@ -25,13 +24,13 @@ class TimeSeriesData {
     DatedSource<T> *source;
 
     inline void addToMap(
-            std::map<unsigned long, std::vector<std::string>> &map,
+            std::map<unsigned long, std::vector<FileWithDate>> &map,
             const char *folder,
             const std::filesystem::directory_entry &entry)
     {
         auto date = source->getDate(folder, entry);
         auto key = validateDataIndex(date);
-        map[key].push_back(entry.path().string());
+        map[key].push_back(FileWithDate{entry.path().string(), (unsigned long)date});
     }
 protected:
     unsigned long capacity;
@@ -40,7 +39,7 @@ protected:
 
     virtual long calculateKey(long date) const = 0;
 public:
-    inline explicit TimeSeriesData(std::string &folder, DatedSource<T> *_source, unsigned long _capacity) {
+    explicit TimeSeriesData(std::string &folder, DatedSource<T> *_source, unsigned long _capacity) {
         path = std::move(folder);
         source = _source;
         capacity = _capacity;
@@ -52,7 +51,7 @@ public:
         delete data;
     }
 
-    unsigned long validateDataIndex(long date) {
+    unsigned long validateDataIndex(long date) const {
         auto key = calculateKey(date);
         if (key < 0 || key >= capacity)
             throw std::runtime_error("key is out of bounds");
