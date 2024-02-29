@@ -87,6 +87,10 @@ JsonParser *FinOpPropertiesJsonSource::getParser() {
     return parser->parser;
 }
 
+FinanceOperationParser::~FinanceOperationParser() {
+    delete propertiesSource;
+}
+
 int FinanceOperationParser::parseName(std::string &n) const {
     if (n == "id" || n == "Id")
         return FINOP_ID;

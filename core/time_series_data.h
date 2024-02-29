@@ -7,10 +7,15 @@
 #include <utility>
 #include <vector>
 
+struct FileWithDate {
+    std::string file_name;
+    unsigned long date;
+};
+
 template<typename T>
 class DatedSource {
 public:
-    virtual T* load(const std::vector<std::string> &files) = 0;
+    virtual T* load(const std::vector<FileWithDate> &files) = 0;
     virtual long getDate(const char *folder, const std::filesystem::directory_entry &entry) = 0;
 };
 
@@ -43,19 +48,19 @@ public:
         data = new T*[_capacity]();
     }
 
-    inline ~TimeSeriesData() {
+    virtual ~TimeSeriesData() {
         delete data;
     }
 
-    inline unsigned long validateDataIndex(long date) {
+    unsigned long validateDataIndex(long date) {
         auto key = calculateKey(date);
         if (key < 0 || key >= capacity)
             throw std::runtime_error("key is out of bounds");
         return key;
     }
 
-    inline void load() {
-        std::map<unsigned long, std::vector<std::string>> fileMap;
+    void load() {
+        std::map<unsigned long, std::vector<FileWithDate>> fileMap;
         for (const auto & entry1 : std::filesystem::directory_iterator(path)) {
             if (entry1.is_directory()) {
                 for (const auto & entry2 : std::filesystem::directory_iterator(entry1)) {

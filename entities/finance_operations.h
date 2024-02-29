@@ -27,7 +27,7 @@ struct FinOpProperty {
 class FinOpProperties final : public ObjectArray<FinOpProperty> {
 public:
     inline explicit FinOpProperties(ObjectArraySource<FinOpProperty> *source, long capacity):
-        ObjectArray(source, capacity) {
+        ObjectArray(source, capacity, false) {
     }
 
 protected:
@@ -60,7 +60,7 @@ public:
     std::map<unsigned long, long> totals;
 
     inline explicit FinanceOperations(ObjectArraySource<FinanceOperation> *source, long capacity):
-        ObjectArray<FinanceOperation>(source, capacity) {
+        ObjectArray(source, capacity) {
     }
 
     void calculateTotals(FinanceOperations *prev, Accounts *accounts, Subcategories *subcategories);

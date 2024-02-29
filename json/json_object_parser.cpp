@@ -1,7 +1,8 @@
 #include "json_object_parser.h"
 
 JsonObjectParser::~JsonObjectParser() {
-    delete parser;
+    if (delete_parser)
+        delete parser;
 }
 
 void JsonObjectParser::parse(bool call_expected) {

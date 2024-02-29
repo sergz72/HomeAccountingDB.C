@@ -20,12 +20,13 @@ protected:
     unsigned long count;
     unsigned long active_count;
 
-    inline explicit ObjectArray(ObjectArraySource<T> *source, unsigned long _capacity) {
+    inline explicit ObjectArray(ObjectArraySource<T> *source, unsigned long _capacity, bool deleteSource = true) {
         array = (T*)calloc(_capacity, sizeof(T));
         capacity = _capacity;
         count = 0;
         active_count = source->load(array, count, _capacity);
-        delete source;
+        if (deleteSource)
+            delete source;
     }
 
     inline ~ObjectArray() {

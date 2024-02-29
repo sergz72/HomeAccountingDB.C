@@ -19,7 +19,7 @@ public:
 class FinOpPropertiesJsonSource: public JsonObjectArrayParser<FinOpProperty> {
     FinOpPropertyParser *parser;
 public:
-    inline explicit FinOpPropertiesJsonSource(JsonParser *p): JsonObjectArrayParser<FinOpProperty>() {
+    explicit FinOpPropertiesJsonSource(JsonParser *p): JsonObjectArrayParser() {
         parser = new FinOpPropertyParser(p);
     }
 
@@ -48,6 +48,8 @@ public:
         propertiesSource = new FinOpPropertiesJsonSource(parser);
         propertiesCapacity = _propertiesCapacity;
     }
+
+    ~FinanceOperationParser() override;
 };
 
 #endif
