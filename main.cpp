@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
         auto begin = std::chrono::steady_clock::now();
         auto configuration = new JsonDBConfig(argv[1], 300, 5);
         auto db = new DB(argv[1], 2012, 6, 300, 2000, 1000, configuration);
-        db->load();
+        db->loadAll();
         auto end = std::chrono::steady_clock::now();
         std::cout << "Database loaded in " << std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count() << " us" << std::endl;
         begin = std::chrono::steady_clock::now();

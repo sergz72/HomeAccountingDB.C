@@ -29,4 +29,5 @@ add_executable(HomeAccountingDB main.cpp
         jsonconfig/finance_operations.h
         jsonconfig/json_db_config.cpp
         jsonconfig/json_db_config.h
-        db_config.h)
+        db_config.h
+        core/lru.h)

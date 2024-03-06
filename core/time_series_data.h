@@ -5,6 +5,7 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include "lru.h"
 
 struct FileWithDate {
     std::string file_name;
@@ -19,11 +20,11 @@ public:
 };
 
 template<typename T>
-class TimeSeriesData {
+class TimeSeriesData: Lru<T> {
     std::string path;
     DatedSource<T> *source;
 
-    inline void addToMap(
+    void addToMap(
             std::map<unsigned long, std::vector<FileWithDate>> &map,
             const char *folder,
             const std::filesystem::directory_entry &entry)
@@ -35,7 +36,7 @@ class TimeSeriesData {
 protected:
     unsigned long capacity;
     unsigned long count;
-    T **data;
+    LruItem<T> **data;
 
     virtual long calculateKey(long date) const = 0;
 public:
@@ -44,7 +45,7 @@ public:
         source = _source;
         capacity = _capacity;
         count = 0;
-        data = new T*[_capacity]();
+        data = new LruItem<T>*[_capacity]();
     }
 
     virtual ~TimeSeriesData() {
@@ -58,7 +59,7 @@ public:
         return key;
     }
 
-    void load() {
+    void loadAll() {
         std::map<unsigned long, std::vector<FileWithDate>> fileMap;
         for (const auto & entry1 : std::filesystem::directory_iterator(path)) {
             if (entry1.is_directory()) {
@@ -73,7 +74,7 @@ public:
             auto object = source->load(entry.second);
             if (entry.first >= count)
                 count = entry.first + 1;
-            data[entry.first] = object;
+            data[entry.first] = this->lruAdd(object);
         }
     }
 };

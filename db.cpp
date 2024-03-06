@@ -12,9 +12,9 @@ void DB::calculateTotals(unsigned long from) {
     FinanceOperations *prev = nullptr;
     while (from < count) {
         auto ops = data[from];
-        if (ops != nullptr) {
-            ops->calculateTotals(prev, accounts, subcategories);
-            prev = ops;
+        if (ops != nullptr && ops->data != nullptr) {
+            ops->data->calculateTotals(prev, accounts, subcategories);
+            prev = ops->data;
         }
         from++;
     }
@@ -23,9 +23,9 @@ void DB::calculateTotals(unsigned long from) {
 void DB::printChanges(unsigned long date) {
     unsigned long idx = validateDataIndex((long)date);
     auto ops = data[idx];
-    if (ops == nullptr)
+    if (ops == nullptr || ops->data == nullptr)
         std::cout << "No data" << std::endl;
     else {
-        ops->printChanges(date, accounts, subcategories);
+        ops->data->printChanges(date, accounts, subcategories);
     }
 }
