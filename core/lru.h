@@ -4,16 +4,19 @@
 template<typename T>
 struct LruItem {
     T* data;
+    unsigned long key;
     LruItem *prev;
     LruItem *next;
 
-    LruItem(T* object, LruItem *_next) {
+    LruItem(unsigned long _key, T* object, LruItem *_next) {
+        key  = _key;
         data = object;
         prev = nullptr;
         next = _next;
     }
 
-    LruItem() {
+    explicit LruItem(unsigned long _key) {
+        key  = _key;
         data = nullptr;
         prev = nullptr;
         next = nullptr;
@@ -41,8 +44,8 @@ protected:
         activeItems = 0;
     }
 
-    LruItem<T> *lruAdd(T* object) {
-        auto item = new LruItem<T>(object, head);
+    LruItem<T> *lruAdd(unsigned long key, T* object) {
+        auto item = new LruItem<T>(key, object, head);
         lruAttach(item);
         return item;
     }

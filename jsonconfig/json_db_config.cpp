@@ -57,6 +57,7 @@ public:
 
     FinanceOperations* load(const std::vector<FileWithDate> &files) override;
     long getDate(const char *folder, const std::filesystem::directory_entry &entry) override;
+    std::vector<FileWithDate> &getFiles(unsigned long date) override;
 };
 
 FinanceOperations* JsonDatedSource::load(const std::vector<FileWithDate> &files) {
@@ -66,6 +67,10 @@ FinanceOperations* JsonDatedSource::load(const std::vector<FileWithDate> &files)
 
 long JsonDatedSource::getDate(const char *folder, const std::filesystem::directory_entry &entry) {
     return atol(folder);
+}
+
+std::vector<FileWithDate> &JsonDatedSource::getFiles(unsigned long date) {
+    throw std::runtime_error("JsonDatedSource::getFiles is not implemented");
 }
 
 ObjectArraySource<Account> *JsonDBConfig::getAccountsSource() {
