@@ -10,19 +10,19 @@ void JsonToken::print() const {
             std::cout << "EOF" << std::endl;
             break;
         case character:
-            std::cout << "CHAR " << char_value << std::endl;
+            std::cout << "CHAR " << charValue << std::endl;
             break;
         case str:
-            std::cout <<"STR " << string_value << std::endl;
+            std::cout <<"STR " << stringValue << std::endl;
             break;
         case name:
-            std::cout <<"NAME " << string_value << std::endl;
+            std::cout <<"NAME " << stringValue << std::endl;
             break;
         case integer:
-            std::cout <<"INT " << int_value << std::endl;
+            std::cout <<"INT " << intValue << std::endl;
             break;
         case real:
-            std::cout <<"REAL " << double_value << std::endl;
+            std::cout <<"REAL " << doubleValue << std::endl;
             break;
     }
 }
@@ -59,7 +59,7 @@ void JsonParser::nextToken() {
                         return;
                     case '"':
                         current.typ = str;
-                        current.string_value.clear();
+                        current.stringValue.clear();
                         break;
                     default:
                         if (c == '-') {
@@ -70,14 +70,14 @@ void JsonParser::nextToken() {
                             current.setInteger(c - '0');
                         } else if (c > 0x20) {
                             current.typ = name;
-                            current.string_value = c;
+                            current.stringValue = c;
                         }
                         break;
                 }
                 break;
             case name:
                 if (c >= 'a' && c <= 'z') {
-                    current.string_value += c;
+                    current.stringValue += c;
                 } else {
                     position--;
                     return;
@@ -87,28 +87,28 @@ void JsonParser::nextToken() {
                 if (c == '"') {
                     return;
                 } else {
-                    current.string_value += c;
+                    current.stringValue += c;
                 }
                 break;
             case integer:
                 if (c >= '0' && c <= '9')
-                    current.int_value = current.int_value * 10 + c - '0';
+                    current.intValue = current.intValue * 10 + c - '0';
                 else if (c == '.') {
                     current.typ = real;
                     divider = 1;
                 } else {
                     position--;
-                    current.int_value *= sign;
+                    current.intValue *= sign;
                     return;
                 }
                 break;
             case real:
                 if (c >= '0' && c <= '9') {
-                    current.int_value = current.int_value * 10 + c - '0';
+                    current.intValue = current.intValue * 10 + c - '0';
                     divider *= 10;
                 } else {
                     position--;
-                    current.double_value = (double)current.int_value * sign / divider;
+                    current.doubleValue = (double)current.intValue * sign / divider;
                     return;
                 }
                 break;

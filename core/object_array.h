@@ -20,7 +20,7 @@ protected:
     unsigned long count;
     unsigned long active_count;
 
-    inline explicit ObjectArray(ObjectArraySource<T> *source, unsigned long _capacity, bool deleteSource = true) {
+    explicit ObjectArray(ObjectArraySource<T> *source, unsigned long _capacity, bool deleteSource = true) {
         array = (T*)calloc(_capacity, sizeof(T));
         capacity = _capacity;
         count = 0;
@@ -44,7 +44,7 @@ public:
         return element;
     }
 
-    inline unsigned long getCount() const {
+    unsigned long getCount() const {
         return count;
     }
 };

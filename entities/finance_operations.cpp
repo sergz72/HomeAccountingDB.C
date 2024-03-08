@@ -6,7 +6,7 @@ bool FinOpProperties::isValid(const FinOpProperty *value) const {
 }
 
 bool FinanceOperations::isValid(const FinanceOperation *value) const {
-    return true;
+    return value->date != 0;
 }
 
 static void handleTrfrWithSumma(std::map<unsigned long, FinanceChanges> &changes, FinanceOperation *op, long summa) {
@@ -80,8 +80,18 @@ void FinanceOperations::calculateTotals(FinanceOperations *prev, Accounts *accou
     }
 }
 
+FinanceOperations::~FinanceOperations() {
+    FinanceOperation *op = array;
+    for (long i = 0; i < count; i++) {
+        if (op->date != 0 && op->finOpProperties != nullptr) {
+            delete op->finOpProperties;
+        }
+        op++;
+    }
+}
+
 void FinanceOperations::buildChanges(std::map<unsigned long, FinanceChanges> &changes, unsigned long from_date,
-                                     unsigned long to_date, Accounts *accounts, Subcategories *subcategories) {
+                                     unsigned long to_date, Accounts *accounts, Subcategories *subcategories) const {
     FinanceOperation *op = array;
     for (long i = 0; i < count; i++) {
         if (op->date >= from_date && op->date <= to_date)

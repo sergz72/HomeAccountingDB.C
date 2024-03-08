@@ -12,16 +12,16 @@ protected:
     virtual unsigned long getId(const T *value) const = 0;
     virtual JsonParser *getParser() = 0;
 
-    unsigned long parse_array(T *array, unsigned long &count, unsigned long capacity,
-                              bool call_expected = true) {
+    unsigned long parseArray(T *array, unsigned long &count, unsigned long capacity,
+                              bool callExpected = true) {
         auto p = getParser();
         unsigned long added = 0;
-        if (call_expected)
+        if (callExpected)
             p->expected('[');
         else
             p->is('[');
         p->nextToken();
-        while (p->current.typ != character || p->current.char_value != ']') {
+        while (p->current.typ != character || p->current.charValue != ']') {
             T *value = create();
             long id = getId(value);
             if (id > 0) {
@@ -33,9 +33,9 @@ protected:
             else
                 array[count++] = *value;
             p->expectedChar();
-            if (p->current.char_value == ',')
+            if (p->current.charValue == ',')
                 p->nextToken();
-            else if (p->current.char_value != ']')
+            else if (p->current.charValue != ']')
                 throw std::runtime_error(", or ] expected");
             added++;
         }
@@ -43,7 +43,7 @@ protected:
     }
 
     virtual unsigned long load(T *array, unsigned long &count, unsigned long capacity) {
-        return parse_array(array, count, capacity);
+        return parseArray(array, count, capacity);
     }
 
     virtual void save(T *array, unsigned long count, void *to) {

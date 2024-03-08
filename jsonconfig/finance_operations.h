@@ -9,7 +9,7 @@
 class FinOpPropertyParser: public JsonObjectParser {
 protected:
     int parseName(std::string &n) const override;
-    void parseValue(int field_id) override;
+    void parseValue(int fieldId) override;
 public:
     FinOpProperty property;
 
@@ -24,7 +24,7 @@ public:
     }
 
     unsigned long load(FinOpProperty *array, unsigned long &count, unsigned long capacity) override {
-        return parse_array(array, count, capacity, false);
+        return parseArray(array, count, capacity, false);
     }
 
     ~FinOpPropertiesJsonSource() override;
@@ -40,7 +40,7 @@ class FinanceOperationParser: public JsonObjectParser {
     long propertiesCapacity;
 protected:
     int parseName(std::string &n) const override;
-    void parseValue(int field_id) override;
+    void parseValue(int fieldId) override;
 public:
     FinanceOperation operation;
 

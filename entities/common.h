@@ -4,8 +4,8 @@
 #include "../json/json_parser.h"
 
 union CharInt {
-    char char_value[sizeof(long)];
-    long int_value;
+    char charValue[sizeof(long)];
+    long intValue;
 };
 
 unsigned long parse_date(JsonParser *parser);

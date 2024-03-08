@@ -36,7 +36,7 @@ JsonParser *JsonFinanceOperationsSource::getParser() {
 unsigned long JsonFinanceOperationsSource::load(FinanceOperation *array, unsigned long &count, unsigned long capacity) {
     unsigned long added = 0;
     for (const auto& file: files) {
-        parser = new FinanceOperationParser(file.file_name.c_str(), propertiesCapacity);
+        parser = new FinanceOperationParser(file.fileName.c_str(), propertiesCapacity);
         auto from = count;
         added += JsonObjectArrayParser::load(array, count, capacity);
         delete parser;
@@ -69,11 +69,11 @@ long JsonDatedSource::getDate(const char *folder, const std::filesystem::directo
 }
 
 ObjectArraySource<Account> *JsonDBConfig::getAccountsSource() {
-    return new AccountsJsonSource(base_folder);
+    return new AccountsJsonSource(baseFolder);
 }
 
 ObjectArraySource<Subcategory> *JsonDBConfig::getSubcategoriesSource() {
-    return new SubcategoriesJsonSource(base_folder);
+    return new SubcategoriesJsonSource(baseFolder);
 }
 
 DatedSource<FinanceOperations> *JsonDBConfig::getMainDataSource() {

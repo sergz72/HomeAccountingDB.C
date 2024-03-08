@@ -22,25 +22,25 @@ int SubcategoryParser::parseName(std::string &n) const {
     return 0;
 }
 
-void SubcategoryParser::parseValue(int field_id) {
-    switch (field_id) {
+void SubcategoryParser::parseValue(int fieldId) {
+    switch (fieldId) {
         case SUBCATEGORY_ID:
             subcategory.id = parser->expectedInteger();
             break;
         case SUBCATEGORY_NAME:
             parser->expectedString();
-            strncpy(subcategory.name, parser->current.string_value.c_str(), SUBCATEGORY_NAME_SIZE);
+            strncpy(subcategory.name, parser->current.stringValue.c_str(), SUBCATEGORY_NAME_SIZE);
             break;
         case SUBCATEGORY_CATEGORY:
             subcategory.category = parser->expectedInteger();
             break;
         case SUBCATEGORY_OPERATION_CODE:
             parser->expectedString();
-            if (parser->current.string_value == "INCM")
+            if (parser->current.stringValue == "INCM")
                 subcategory.operationCode = incm;
-            else if (parser->current.string_value == "EXPN")
+            else if (parser->current.stringValue == "EXPN")
                 subcategory.operationCode = expn;
-            else if (parser->current.string_value == "SPCL")
+            else if (parser->current.stringValue == "SPCL")
                 subcategory.operationCode = spcl;
             else
                 throw std::runtime_error("incorrect subcategory operation code");
@@ -52,21 +52,21 @@ void SubcategoryParser::parseValue(int field_id) {
                 break;
             }
             parser->isString();
-            if (parser->current.string_value == "INCC")
+            if (parser->current.stringValue == "INCC")
                 subcategory.code = incc;
-            else if (parser->current.string_value == "EXPC")
+            else if (parser->current.stringValue == "EXPC")
                 subcategory.code = expc;
-            else if (parser->current.string_value == "EXCH")
+            else if (parser->current.stringValue == "EXCH")
                 subcategory.code = exch;
-            else if (parser->current.string_value == "TRFR")
+            else if (parser->current.stringValue == "TRFR")
                 subcategory.code = trfr;
-            else if (parser->current.string_value == "COMB")
+            else if (parser->current.stringValue == "COMB")
                 subcategory.code = comb;
-            else if (parser->current.string_value == "COMC")
+            else if (parser->current.stringValue == "COMC")
                 subcategory.code = comc;
-            else if (parser->current.string_value == "FUEL")
+            else if (parser->current.stringValue == "FUEL")
                 subcategory.code = fuel;
-            else if (parser->current.string_value == "PRCN")
+            else if (parser->current.stringValue == "PRCN")
                 subcategory.code = prcn;
             else
                 throw std::runtime_error("incorrect subcategory code");
@@ -76,8 +76,8 @@ void SubcategoryParser::parseValue(int field_id) {
     }
 }
 
-SubcategoriesJsonSource::SubcategoriesJsonSource(const char *data_folder) : JsonObjectArrayParser<Subcategory>() {
-    auto file_name = std::string(data_folder);
+SubcategoriesJsonSource::SubcategoriesJsonSource(const char *dataFolder) : JsonObjectArrayParser() {
+    auto file_name = std::string(dataFolder);
     file_name += "/subcategories.json";
     parser = new SubcategoryParser(file_name.c_str());
 }

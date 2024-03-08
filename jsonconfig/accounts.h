@@ -8,17 +8,17 @@
 class AccountParser: public JsonObjectParser {
 protected:
     int parseName(std::string &n) const override;
-    void parseValue(int field_id) override;
+    void parseValue(int fieldId) override;
 public:
     Account account;
 
-    explicit AccountParser(const char * file_name): JsonObjectParser(file_name) {}
+    explicit AccountParser(const char * fileName): JsonObjectParser(fileName) {}
 };
 
 class AccountsJsonSource: public JsonObjectArrayParser<Account> {
     AccountParser *parser;
 public:
-    explicit AccountsJsonSource(const char *data_folder);
+    explicit AccountsJsonSource(const char *dataFolder);
     ~AccountsJsonSource() override;
 protected:
     Account *create() override;

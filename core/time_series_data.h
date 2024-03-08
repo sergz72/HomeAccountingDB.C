@@ -8,7 +8,7 @@
 #include "lru.h"
 
 struct FileWithDate {
-    std::string file_name;
+    std::string fileName;
     unsigned long date;
 };
 
@@ -24,6 +24,11 @@ class TimeSeriesData: Lru<T> {
     std::string path;
     DatedSource<T> *source;
 
+    unsigned long capacity;
+    unsigned long maxActiveItems;
+    unsigned long activeItems;
+    LruItem<T> **data;
+
     void addToMap(
             std::map<unsigned long, std::vector<FileWithDate>> &map,
             const char *folder,
@@ -34,17 +39,22 @@ class TimeSeriesData: Lru<T> {
         map[key].push_back(FileWithDate{entry.path().string(), (unsigned long)date});
     }
 protected:
-    unsigned long capacity;
     unsigned long count;
-    LruItem<T> **data;
+
+    T* get(unsigned long idx) {
+        auto d = data[idx];
+        return d == nullptr ? nullptr : d->data;
+    }
 
     virtual long calculateKey(long date) const = 0;
 public:
-    explicit TimeSeriesData(std::string &folder, DatedSource<T> *_source, unsigned long _capacity) {
+    explicit TimeSeriesData(std::string &folder, DatedSource<T> *_source, unsigned long _capacity,
+                            unsigned long _maxActiveItems) {
         path = std::move(folder);
         source = _source;
         capacity = _capacity;
-        count = 0;
+        count = activeItems = 0;
+        maxActiveItems = _maxActiveItems;
         data = new LruItem<T>*[_capacity]();
     }
 
@@ -75,6 +85,25 @@ public:
             if (entry.first >= count)
                 count = entry.first + 1;
             data[entry.first] = this->lruAdd(object);
+        }
+    }
+
+    void init() {
+        for (const auto & entry1 : std::filesystem::directory_iterator(path)) {
+            if (entry1.is_directory()) {
+                for (const auto & entry2 : std::filesystem::directory_iterator(entry1)) {
+                    auto date = source->getDate(entry1.path().filename().c_str(), entry2);
+                    auto key = validateDataIndex(date);
+                    if (data[key] == nullptr)
+                        data[key] = new LruItem<T>();
+                }
+            }
+            else {
+                auto date = source->getDate(nullptr, entry1);
+                auto key = validateDataIndex(date);
+                if (data[key] == nullptr)
+                    data[key] = new LruItem<T>();
+            }
         }
     }
 };

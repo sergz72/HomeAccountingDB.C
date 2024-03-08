@@ -8,17 +8,17 @@
 class SubcategoryParser: public JsonObjectParser {
 protected:
     int parseName(std::string &n) const override;
-    void parseValue(int field_id) override;
+    void parseValue(int fieldId) override;
 public:
     Subcategory subcategory;
 
-    explicit SubcategoryParser(const char *file_name): JsonObjectParser(file_name) {}
+    explicit SubcategoryParser(const char *fileName): JsonObjectParser(fileName) {}
 };
 
 class SubcategoriesJsonSource: public JsonObjectArrayParser<Subcategory> {
     SubcategoryParser *parser;
 public:
-    explicit SubcategoriesJsonSource(const char *data_folder);
+    explicit SubcategoriesJsonSource(const char *dataFolder);
 
     ~SubcategoriesJsonSource() override;
 protected:

@@ -1,7 +1,7 @@
 #include "json_object_parser.h"
 
 JsonObjectParser::~JsonObjectParser() {
-    if (delete_parser)
+    if (deleteParser)
         delete parser;
 }
 
@@ -12,12 +12,12 @@ void JsonObjectParser::parse(bool call_expected) {
         parser->is('{');
     while (parser->current.typ != eof) {
         parser->expectedString();
-        auto field_id = parseName(parser->current.string_value);
-        if (field_id == 0) {
-            throw std::runtime_error("unknown field name " + parser->current.string_value);
+        auto fieldId = parseName(parser->current.stringValue);
+        if (fieldId == 0) {
+            throw std::runtime_error("unknown field name " + parser->current.stringValue);
         }
         parser->expected(':');
-        parseValue(field_id);
+        parseValue(fieldId);
         char c = parser->expectedChar();
         if (c == '}')
             break;

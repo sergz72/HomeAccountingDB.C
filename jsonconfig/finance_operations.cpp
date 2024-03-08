@@ -26,8 +26,8 @@ int FinOpPropertyParser::parseName(std::string &n) const {
     return 0;
 }
 
-void FinOpPropertyParser::parseValue(int field_id) {
-    switch (field_id) {
+void FinOpPropertyParser::parseValue(int fieldId) {
+    switch (fieldId) {
         case PROPERTY_NUMERIC_VALUE:
             parser->nextToken();
             if (parser->current.isNull())
@@ -42,7 +42,7 @@ void FinOpPropertyParser::parseValue(int field_id) {
                 property.stringValue[0] = 0;
             else {
                 parser->isString();
-                strcpy(property.stringValue, parser->current.string_value.c_str());
+                strcpy(property.stringValue, parser->current.stringValue.c_str());
             }
             break;
         case PROPERTY_DATE_VALUE:
@@ -50,17 +50,17 @@ void FinOpPropertyParser::parseValue(int field_id) {
             break;
         case PROPERTY_CODE:
             parser->expectedString();
-            if (parser->current.string_value == "AMOU")
+            if (parser->current.stringValue == "AMOU")
                 property.code = amou;
-            else if (parser->current.string_value == "DIST")
+            else if (parser->current.stringValue == "DIST")
                 property.code = dist;
-            else if (parser->current.string_value == "NETW")
+            else if (parser->current.stringValue == "NETW")
                 property.code = netw;
-            else if (parser->current.string_value == "PPTO")
+            else if (parser->current.stringValue == "PPTO")
                 property.code = ppto;
-            else if (parser->current.string_value == "SECA")
+            else if (parser->current.stringValue == "SECA")
                 property.code = seca;
-            else if (parser->current.string_value == "TYPE")
+            else if (parser->current.stringValue == "TYPE")
                 property.code = type;
             else
                 throw std::runtime_error("incorrect property code");
@@ -108,10 +108,10 @@ int FinanceOperationParser::parseName(std::string &n) const {
     return 0;
 }
 
-void FinanceOperationParser::parseValue(int field_id) {
+void FinanceOperationParser::parseValue(int fieldId) {
     JsonTokenType typ;
     long id;
-    switch (field_id) {
+    switch (fieldId) {
         case FINOP_AMOUNT:
             parser->nextToken();
             if (parser->current.isNull())
@@ -120,7 +120,7 @@ void FinanceOperationParser::parseValue(int field_id) {
                 typ = parser->current.typ;
                 if (typ != integer && typ != real)
                     throw std::runtime_error("integer or double is expected");
-                operation.amount = parser->current.int_value;
+                operation.amount = parser->current.intValue;
             }
             break;
         case FINOP_SUMMA:
@@ -128,7 +128,7 @@ void FinanceOperationParser::parseValue(int field_id) {
             typ = parser->current.typ;
             if (typ != integer && typ != real)
                 throw std::runtime_error("integer or double is expected");
-            operation.summa = parser->current.int_value;
+            operation.summa = parser->current.intValue;
             break;
         case FINOP_ACCOUNT:
             id = parser->expectedInteger();

@@ -10,12 +10,12 @@ unsigned long parse_date(JsonParser *parser) {
     if (value <= 0)
         throw std::runtime_error("wrong year value");
     parser->expected(',');
-    long month = parser->expectedInteger();
+    const long month = parser->expectedInteger();
     if (month <= 0 || month > 12)
         throw std::runtime_error("wrong month value");
     value += month * 100;
     parser->expected(',');
-    long day = parser->expectedInteger();
+    const long day = parser->expectedInteger();
     if (day <= 0 || day > 31)
         throw std::runtime_error("wrong day value");
     value += day;

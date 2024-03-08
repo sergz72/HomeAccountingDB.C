@@ -10,14 +10,14 @@ struct Account {
     unsigned long id;
     char name[ACCOUNT_NAME_SIZE];
     CharInt currency;
-    unsigned long active_to;
+    unsigned long activeTo;
     unsigned long cashAccount;
 };
 
 class Accounts: public ObjectArray<Account> {
 public:
-    inline explicit Accounts(ObjectArraySource<Account> *source, unsigned long capacity):
-        ObjectArray<Account>(source, capacity) {
+    explicit Accounts(ObjectArraySource<Account> *source, unsigned long capacity):
+        ObjectArray(source, capacity) {
         buildCashAccounts();
     }
 

@@ -6,20 +6,20 @@
 class DB: public TimeSeriesData<FinanceOperations> {
     Accounts *accounts;
     Subcategories *subcategories;
-    long min_month;
-    long min_year;
+    long minMonth;
+    long minYear;
 protected:
     long calculateKey(long date) const override;
 public:
-    inline DB(const char *base_path, long _min_year, long _min_month, unsigned long accounts_capacity,
-              unsigned long subcategories_capacity, unsigned long time_series_data_capacity,
-              DBConfiguration *configuration):
-              TimeSeriesData<FinanceOperations>(std::string(base_path).append("/dates"),
-                                                configuration->getMainDataSource(), time_series_data_capacity) {
-        min_year = _min_year;
-        min_month = _min_month;
-        accounts = new Accounts(configuration->getAccountsSource(), accounts_capacity);
-        subcategories = new Subcategories(configuration->getSubcategoriesSource(), subcategories_capacity);
+    inline DB(const char *basePath, long _minYear, long _minMonth, unsigned long accountsCapacity,
+              unsigned long subcategoriesCapacity, unsigned long timeSeriesDataCapacity,
+              long maxTimeSeriesActiveItems, DBConfiguration *configuration):
+              TimeSeriesData(std::string(basePath).append("/dates"),
+                  configuration->getMainDataSource(), timeSeriesDataCapacity, maxTimeSeriesActiveItems) {
+        minYear = _minYear;
+        minMonth = _minMonth;
+        accounts = new Accounts(configuration->getAccountsSource(), accountsCapacity);
+        subcategories = new Subcategories(configuration->getSubcategoriesSource(), subcategoriesCapacity);
     }
 
     inline ~DB() {

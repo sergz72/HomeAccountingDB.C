@@ -22,9 +22,9 @@ int AccountParser::parseName(std::string &n) const {
     return 0;
 }
 
-void AccountParser::parseValue(int field_id) {
+void AccountParser::parseValue(int fieldId) {
     long id;
-    switch (field_id) {
+    switch (fieldId) {
         case ACCOUNT_ID:
             id = parser->expectedInteger();
             if (id <= 0)
@@ -33,17 +33,17 @@ void AccountParser::parseValue(int field_id) {
             break;
         case ACCOUNT_NAME:
             parser->expectedString();
-            strncpy(account.name, parser->current.string_value.c_str(), ACCOUNT_NAME_SIZE);
+            strncpy(account.name, parser->current.stringValue.c_str(), ACCOUNT_NAME_SIZE);
             break;
         case ACCOUNT_CURRENCY_NAME:
             parser->expectedString();
-            if (parser->current.string_value.length() != 3)
+            if (parser->current.stringValue.length() != 3)
                 throw std::runtime_error("incorrect currency");
-            account.currency.int_value = 0;
-            strcpy(account.currency.char_value, parser->current.string_value.c_str());
+            account.currency.intValue = 0;
+            strcpy(account.currency.charValue, parser->current.stringValue.c_str());
             break;
         case ACCOUNT_ACTIVE_TO:
-            account.active_to = parse_date(parser);
+            account.activeTo = parse_date(parser);
             break;
         case ACCOUNT_IS_CASH:
             account.cashAccount = parser->expectedBool() ? 0 : 1;
@@ -52,10 +52,10 @@ void AccountParser::parseValue(int field_id) {
     }
 }
 
-AccountsJsonSource::AccountsJsonSource(const char *data_folder) : JsonObjectArrayParser<Account>() {
-    auto file_name = std::string(data_folder);
-    file_name += "/accounts.json";
-    parser = new AccountParser(file_name.c_str());
+AccountsJsonSource::AccountsJsonSource(const char *dataFolder) : JsonObjectArrayParser<Account>() {
+    auto fileName = std::string(dataFolder);
+    fileName += "/accounts.json";
+    parser = new AccountParser(fileName.c_str());
 }
 
 AccountsJsonSource::~AccountsJsonSource() {

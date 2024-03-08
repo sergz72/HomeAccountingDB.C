@@ -15,30 +15,30 @@ enum JsonTokenType {
 
 struct JsonToken {
     JsonTokenType typ;
-    char char_value;
-    std::string string_value;
-    long int_value;
-    double double_value;
+    char charValue;
+    std::string stringValue;
+    long intValue;
+    double doubleValue;
 public:
-    inline JsonToken() {
+    JsonToken() {
         typ = character;
-        char_value = 0;
-        int_value = 0;
-        double_value = 0;
+        charValue = 0;
+        intValue = 0;
+        doubleValue = 0;
     }
 
-    inline void setChar(char c) {
+    void setChar(char c) {
         typ = character;
-        char_value = c;
+        charValue = c;
     }
 
     inline void setInteger(long l) {
         typ = integer;
-        int_value = l;
+        intValue = l;
     }
 
     inline bool isNull() const {
-        return typ == name && string_value == "null";
+        return typ == name && stringValue == "null";
     }
 
     void print() const;
@@ -52,45 +52,45 @@ class JsonParser {
 public:
     JsonToken current;
 
-    explicit JsonParser(const char *file_name);
+    explicit JsonParser(const char *fileName);
     void nextToken();
 
-    inline void expected(char c) {
+    void expected(char c) {
         nextToken();
         is(c);
     }
 
-    inline void is(char c) const {
-        if (current.typ != character || current.char_value != c)
+    void is(char c) const {
+        if (current.typ != character || current.charValue != c)
             throw std::runtime_error(std::string(" expected").insert(0, 1, c));
     }
 
-    inline char expectedChar() {
+    char expectedChar() {
         nextToken();
         if (current.typ != character)
             throw std::runtime_error("char expected");
-        return current.char_value;
+        return current.charValue;
     }
 
-    inline void expectedString() {
+    void expectedString() {
         nextToken();
         isString();
     }
 
-    inline void isString() const {
+    void isString() const {
         if (current.typ != str)
             throw std::runtime_error("string expected");
     }
 
-    inline long expectedInteger() {
+    long expectedInteger() {
         nextToken();
         return isInteger();
     }
 
-    inline long isInteger() const {
+    long isInteger() const {
         if (current.typ != integer)
             throw std::runtime_error("integer expected");
-        return current.int_value;
+        return current.intValue;
     }
 
     inline void expectedName() {
@@ -101,9 +101,9 @@ public:
 
     inline bool expectedBool() {
         expectedName();
-        if (current.string_value == "true")
+        if (current.stringValue == "true")
             return true;
-        else if (current.string_value == "false")
+        else if (current.stringValue == "false")
             return false;
         else
             throw std::runtime_error("bool expected");

@@ -12,6 +12,12 @@ struct LruItem {
         prev = nullptr;
         next = _next;
     }
+
+    LruItem() {
+        data = nullptr;
+        prev = nullptr;
+        next = nullptr;
+    }
 };
 
 template<typename T>

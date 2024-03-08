@@ -4,21 +4,21 @@
 #include "json_parser.h"
 
 class JsonObjectParser {
-    bool delete_parser;
+    bool deleteParser;
 protected:
     virtual int parseName(std::string &name) const = 0;
-    virtual void parseValue(int field_id) = 0;
+    virtual void parseValue(int fieldId) = 0;
 public:
     JsonParser *parser;
 
-    explicit JsonObjectParser(const char *file_name) {
-        parser = new JsonParser(file_name);
-        delete_parser = true;
+    explicit JsonObjectParser(const char *fileName) {
+        parser = new JsonParser(fileName);
+        deleteParser = true;
     }
 
     explicit JsonObjectParser(JsonParser *p) {
         parser = p;
-        delete_parser = false;
+        deleteParser = false;
     }
 
     virtual ~JsonObjectParser();

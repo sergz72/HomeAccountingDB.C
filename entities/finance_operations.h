@@ -62,9 +62,11 @@ public:
         ObjectArray(source, capacity) {
     }
 
+    ~FinanceOperations() override;
+
     void calculateTotals(FinanceOperations *prev, Accounts *accounts, Subcategories *subcategories);
     void buildChanges(std::map<unsigned long, FinanceChanges> &changes, unsigned long from_date, unsigned long to_date,
-                      Accounts *accounts, Subcategories *subcategories);
+                      Accounts *accounts, Subcategories *subcategories) const;
     void printChanges(unsigned long _date, Accounts *accounts, Subcategories *subcategories);
 };
 

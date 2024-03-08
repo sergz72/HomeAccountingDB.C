@@ -4,12 +4,12 @@
 #include "../db_config.h"
 
 class JsonDBConfig: public DBConfiguration {
-    const char *base_folder;
+    const char *baseFolder;
     long capacity;
     long propertiesCapacity;
 public:
-    inline explicit JsonDBConfig(const char *_base_folder, long _capacity, long _propertiesCapacity) {
-        base_folder = _base_folder;
+    inline explicit JsonDBConfig(const char *_baseFolder, long _capacity, long _propertiesCapacity) {
+        baseFolder = _baseFolder;
         capacity = _capacity;
         propertiesCapacity = _propertiesCapacity;
         propertiesCapacity = _propertiesCapacity;

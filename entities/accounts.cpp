@@ -11,9 +11,9 @@ void Accounts::buildCashAccounts() {
     for (long i = 0; i < count; i++) {
         if (isValid(el)) {
             if (el->cashAccount == 0) {
-                if (cash_accounts.contains(el->currency.int_value))
+                if (cash_accounts.contains(el->currency.intValue))
                     throw std::runtime_error("duplicate cash account");
-                cash_accounts.insert({el->currency.int_value, el->id});
+                cash_accounts.insert({el->currency.intValue, el->id});
             }
         }
         el++;
@@ -23,9 +23,9 @@ void Accounts::buildCashAccounts() {
     for (long i = 0; i < count; i++) {
         if (isValid(el)) {
             if (el->cashAccount == 1) {
-                if (!cash_accounts.contains(el->currency.int_value))
+                if (!cash_accounts.contains(el->currency.intValue))
                     throw std::runtime_error("cash account not found");
-                el->cashAccount = cash_accounts[el->currency.int_value];
+                el->cashAccount = cash_accounts[el->currency.intValue];
             }
         }
         el++;
